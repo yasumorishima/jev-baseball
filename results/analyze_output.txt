@@ -1,0 +1,19 @@
+BASE fit on train n=1431: logit = 0.189 + 2.176 * wrong_side_in  (ridge 0.01)
+eval sample n=250 overturned=145
+
+[JEV-RAW partial: completed rows only] n=170 overturned=105
+arm          Brier    AUC  logloss    acc
+BASE        0.1112  0.926   0.3269  0.818
+RULE             -      -        -  0.794
+JEV-DIST    0.1920  0.817   0.5725  0.806
+JEV-RAW     0.2019  0.773   0.5873  0.706
+Brier(JEV-DIST) - Brier(BASE) = +0.0807  95% [+0.0585, +0.1017]
+Brier(JEV-RAW) - Brier(BASE) = +0.0907  95% [+0.0597, +0.1203]
+Brier(JEV-RAW) - Brier(JEV-DIST) = +0.0099  95% [-0.0166, +0.0356]
+
+[full sample] n=250 overturned=145
+arm          Brier    AUC  logloss    acc
+BASE        0.1129  0.927   0.3292  0.816
+RULE             -      -        -  0.800
+JEV-DIST    0.1800  0.836   0.5433  0.808
+Brier(JEV-DIST) - Brier(BASE) = +0.0670  95% [+0.0490, +0.0840]

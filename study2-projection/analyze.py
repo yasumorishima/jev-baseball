@@ -59,7 +59,12 @@ def fit_ridge(units):
     b = [sum(x[i] * (y - ybar) for x, y in zip(xs, ys)) for i in range(p)]
     w = solve(a, b)
     res = [y - ybar - sum(wi * xi for wi, xi in zip(w, x)) for x, y in zip(xs, ys)]
-    s = max(math.sqrt(sum(r * r for r in res) / max(len(res) - 1, 1)), 0.005)
+    n = len(res)
+    if n > p + 1:
+        s = math.sqrt(sum(r * r for r in res) / (n - p - 1))      # honest df for p fitted slopes
+    else:
+        s = math.sqrt(sum((y - ybar) ** 2 for y in ys) / max(n - 1, 1))   # too few rows: sd of y
+    s = max(s, 0.005)
 
     def predict(u):
         return ybar + sum(wi * (u[f] - mu[f]) / sd[f] for wi, f in zip(w, FEATS)), s
@@ -101,7 +106,7 @@ def main():
     arms["JEV"] = per_row({i: jev[("test", i)]["bin_probs"] for i in done},
                           {i: jev[("test", i)]["p_up"] for i in done})
     arms["CLIM"] = per_row({i: [0.2] * 5 for i in done}, {i: p_up_train for i in done})
-    s_m = math.sqrt(mean([(u["delta"] - marcel(u)) ** 2 for u in train]))
+    s_m = math.sqrt(mean([(u["delta"] - marcel(u)) ** 2 for u in train]))   # RMS error of the rule
     arms["MARCEL-LITE"] = per_row({i: normal_bins(marcel(test[i]), s_m, cuts) for i in done},
                                   {i: 1 - ncdf(-marcel(test[i]) / s_m) for i in done})
     full = fit_ridge(train)
@@ -155,22 +160,36 @@ def main():
                 else "Jev ~ a crude prior")
         print(f"  -> crossover {label}: {tier}")
 
-    # Recall probe
-    pdone = [i for i in range(len(probe)) if ("probe", i) in jev]
+    # Secondary (pre-declared): drop "star" lines, i.e. any standardised 2025 feature |z| > 2.5
+    # (z over the 227 test batters' 2025 values), which anonymisation cannot hide.
+    mu = {f: mean([u[f] for u in test]) for f in FEATS}
+    sd = {f: math.sqrt(mean([(u[f] - mu[f]) ** 2 for u in test])) for f in FEATS}
+    keep = [k for k, i in enumerate(done) if all(abs((test[i][f] - mu[f]) / sd[f]) <= 2.5 for f in FEATS)]
+    print(f"\nSecondary: without extreme lines (|z| > 2.5 on any feature): n = {len(keep)} of {len(done)}")
+    for k in ("CLIM", "MARCEL-LITE", "RIDGE(all)"):
+        d, lo, hi = boot([arms["JEV"][0][x] for x in keep], [arms[k][0][x] for x in keep])
+        print(f"  RPS(JEV) - RPS({k:11s}) {d:+.4f}  95% [{lo:+.4f}, {hi:+.4f}]")
+
+    # Recall probe: scored on every probe row whose source test row Jev also answered.
+    pdone = [i for i in range(len(probe)) if ("probe", i) in jev and ("test", probe[i]["src"][0]) in jev]
+    print(f"\nRecall probe: {len(pdone)} of {len(probe)} blended lines scorable")
     if pdone:
         src = [probe[i]["src"][0] for i in pdone]
-        if all(("test", s) in jev for s in src):
-            pb = [bin_of(probe[i]["delta"], cuts) for i in pdone]
-            j_bl = [rps(jev[("probe", i)]["bin_probs"], b) for i, b in zip(pdone, pb)]
-            j_or = [rps(jev[("test", s)]["bin_probs"], tb[s]) for s in src]
-            r_bl = [rps(normal_bins(*full(probe[i]), cuts), b) for i, b in zip(pdone, pb)]
-            r_or = [rps(normal_bins(*full(test[s]), cuts), tb[s]) for s in src]
-            dj = [a - b for a, b in zip(j_bl, j_or)]
-            dr = [a - b for a, b in zip(r_bl, r_or)]
-            d, lo, hi = boot(dj, dr)
-            print(f"\nRecall probe (n={len(pdone)}): dRPS Jev {mean(dj):+.4f}, RIDGE(all) {mean(dr):+.4f}; "
-                  f"difference {d:+.4f} 95% [{lo:+.4f}, {hi:+.4f}]")
-            print("  -> evidence that Jev recalled players" if lo > 0 else "  -> no evidence of recall")
+        pb = [bin_of(probe[i]["delta"], cuts) for i in pdone]
+
+        def d_rps(f_blend, f_orig):
+            return [rps(f_blend(i), b) - rps(f_orig(s), tb[s]) for i, b, s in zip(pdone, pb, src)]
+        dj = d_rps(lambda i: jev[("probe", i)]["bin_probs"], lambda s: jev[("test", s)]["bin_probs"])
+        dr = d_rps(lambda i: normal_bins(*full(probe[i]), cuts), lambda s: normal_bins(*full(test[s]), cuts))
+        dm = d_rps(lambda i: normal_bins(marcel(probe[i]), s_m, cuts), lambda s: normal_bins(marcel(test[s]), s_m, cuts))
+        dc = d_rps(lambda i: [0.2] * 5, lambda s: [0.2] * 5)
+        print(f"  dRPS (blended - original): JEV {mean(dj):+.4f}  RIDGE(all) {mean(dr):+.4f}  "
+              f"MARCEL-LITE {mean(dm):+.4f}  CLIM {mean(dc):+.4f}")
+        for name, ref in (("RIDGE(all)", dr), ("MARCEL-LITE", dm), ("CLIM", dc)):
+            d, lo, hi = boot(dj, ref)
+            print(f"  JEV - {name:11s} {d:+.4f}  95% [{lo:+.4f}, {hi:+.4f}]  (half-width {(hi-lo)/2:.4f} = smallest detectable gap)")
+        d, lo, hi = boot(dj, dr)
+        print("  -> evidence that Jev recalled players" if lo > 0 else "  -> no evidence of recall (at this power)")
     json.dump({k: v for k, v in arms.items()}, open("arms.json", "w"))
 
 

@@ -4,6 +4,7 @@ Needs OPENROUTER_API_KEY in the environment; the key is never printed.
 """
 import json
 import os
+import random
 import sys
 import time
 import urllib.error
@@ -76,20 +77,26 @@ def call(body, key):
         return json.load(resp)
 
 
-def main():
+def main(limit=None):
     key = os.environ["OPENROUTER_API_KEY"]
     fz = json.load(open("frozen.json"))
     qs = questions(fz["cuts"])
     jobs = [("test", i, u) for i, u in enumerate(json.load(open("test.json")))]
     jobs += [("probe", i, u) for i, u in enumerate(json.load(open("probe.json")))]
+    # Fixed shuffled order, so a run that stops early is not biased toward low player ids,
+    # and probe lines are interleaved rather than all left for the end.
+    random.Random(20260929).shuffle(jobs)
     done = set()
     if os.path.exists(OUT):
         done = {(a["set"], a["idx"]) for a in map(json.loads, open(OUT))}
-    cost = 0.0
+    cost, sent = 0.0, 0
     with open(OUT, "a") as f:
         for kind, i, u in jobs:
             if (kind, i) in done:
                 continue
+            if limit is not None and sent >= limit:
+                break
+            sent += 1
             body = {"model": MODEL, "state": state(u, fz["lg2025"]), "questions": qs}
             try:
                 resp = call(body, key)
@@ -118,5 +125,7 @@ if __name__ == "__main__":
         fz = json.load(open("frozen.json"))
         print(json.dumps({"state": state(json.load(open("test.json"))[0], fz["lg2025"]),
                           "questions": questions(fz["cuts"])}, indent=1))
+    elif len(sys.argv) > 2 and sys.argv[1] == "--limit":
+        main(int(sys.argv[2]))
     else:
         main()

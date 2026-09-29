@@ -97,6 +97,24 @@ From `prepare.py` (run 2026-09-29, before any Jev call in this study):
 - probe indices: the 50 from `random.Random(20260929).sample(range(227), 50)` (in `frozen.json`)
 - Comparator values are computed by `analyze.py` from these files and do not depend on Jev.
 
+## Changes after the independent audit (made before any Jev call in this study)
+
+1. **RIDGE(n) predictive sd** uses the honest degrees of freedom: residual SS / (n − p − 1) with
+   p = 8 slopes; when n ≤ p + 1 it uses the sd of Δ in the draw. (The original n − 1 made small-n
+   ridge overconfident, which would have moved the crossover for reasons unrelated to Jev.)
+   MARCEL-LITE's s is the RMS error of the rule on the training pairs.
+2. **Label order check:** the first call is made alone (`run_jev.py --limit 1`) and its raw reply
+   is inspected to confirm that `score` probability key "0" is the first criterion ("Big drop").
+3. **Call order** is shuffled with seed 20260929 (test and probe interleaved), so a run that stops
+   early is not biased toward some players and does not lose the probe.
+4. **Secondary result (pre-declared):** the Jev-vs-comparator RPS differences are also reported
+   without "extreme" lines — any standardised 2025 feature with |z| > 2.5 over the 227 test
+   batters — because rounding cannot hide star players.
+5. **Recall probe:** the same blended-minus-original ΔRPS is also computed for MARCEL-LITE and
+   CLIM as null references, and the half-width of each interval is printed as the smallest gap
+   the probe can detect. The probe is scored on every blended row whose source row Jev answered.
+   The reading stays: evidence of recall only if the JEV − RIDGE(all) interval is entirely above 0.
+
 ## Amendments
 
 (none)

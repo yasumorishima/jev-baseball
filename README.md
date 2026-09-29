@@ -4,10 +4,10 @@ Testing [TypeSafe Jev](https://docs.typesafe.ai) — a "decision-only" model tha
 questions with probabilities instead of text — on MLB data, with every study pre-registered
 before the first Jev call.
 
-| Study | Question | Pre-declared reading |
-|---|---|---|
-| **2. [Next-season wOBA](study2-projection/)** (main) | Given an anonymised 2025 batting line, how will the hitter's wOBA move in 2026? How many past examples does a fitted model need to match zero-shot Jev? | **Jev has skill but is worse than a textbook rule (Marcel-lite).** It knows the direction; it badly underestimates how far hitters move. |
-| 1. ABS challenges (control) | Will an ABS pitch challenge be overturned? | Baseline better — as it had to be: the outcome is a fixed-zone rule, not a judgement. |
+| Study | Question | Pre-declared reading | Post-hoc diagnosis |
+|---|---|---|---|
+| **2. [Next-season wOBA](study2-projection/)** (main) | Given an anonymised 2025 batting line, how will the hitter's wOBA move in 2026? How many past examples does a fitted model need to match zero-shot Jev? | **Jev has skill but is worse than a textbook rule (Marcel-lite).** | It gets the direction nearly right but puts far too little probability on big moves. |
+| 1. ABS challenges (control) | Will an ABS pitch challenge be overturned? | Baseline better — as it had to be: the outcome is a fixed-zone rule, not a judgement. | Too timid on clear cases. |
 
 ## Study 2 — is Jev a usable baseball prior when data are scarce?
 
@@ -29,20 +29,25 @@ exact age. Outcome: the change in wOBA, in five ordered bins; primary metric RPS
 - Jev beats climatology: RPS −0.015, 95% [−0.029, −0.001]. So it has *some* skill.
 - Jev loses to the textbook rule: +0.031, 95% [+0.017, +0.044] → **pre-declared reading:
   "Jev is worse than a textbook rule."** On the learning curve it sits between a ridge fitted on
-  20 and on 50 past examples.
+  20 and on 50 past examples (descriptive; the crossover rule was not reached because the
+  Marcel-lite rule fires first).
 - Without the 17 extreme lines (any feature |z| > 2.5, i.e. stars that rounding cannot hide),
-  Jev vs climatology is −0.010, 95% [−0.024, +0.005]: the skill is no longer distinguishable from zero.
-- Recall probe (blend each of 50 hitters with a statistical neighbour to destroy identity): Jev did
-  *better* on blended lines than the fitted model did (difference −0.031, 95% [−0.055, −0.007]),
-  the opposite of what recalling players would produce. No evidence of recall at this power
-  (smallest detectable gap ≈ 0.024).
+  Jev vs climatology is −0.009, 95% [−0.024, +0.005]: the skill is no longer distinguishable from zero.
+- Recall probe (blend each of 50 hitters with a statistical neighbour to destroy identity): Jev's
+  score improved more on blended lines than the fitted model's (−0.031, 95% [−0.055, −0.007]).
+  Blending also narrows the outcomes (sd of Δ 0.036 → 0.029 on these 50), which favours narrow
+  forecasts like Jev's, so this is not evidence *against* recall either; it only rules out a
+  recall penalty larger than about 0.024.
 
 **Where it loses (post-hoc, not pre-registered — [`results/diagnose_output.txt`](study2-projection/results/diagnose_output.txt)).**
 Jev gets the *direction* nearly as well as the rule (correlation with the real change 0.57 vs
 0.62). It uses the right signals — it expects hitters far above the league mean to fall back,
-and it leans on the wOBA − xwOBA "luck" gap even more than reality does (−0.68 vs −0.43). What it
-gets wrong is the **size of the moves**: it puts 2% on a big drop (actual 14.5%) and 9% on a big
-rise (actual 22.5%). Real hitters move much further than Jev believes, and RPS punishes that.
+and it leans on the wOBA − xwOBA "luck" gap strongly (its forecast's correlation with the gap is
+−0.68; the gap's correlation with the real change is −0.43). What it gets wrong, in this sample
+(2025→26, hitters with ≥ 250 PA in both seasons), is the **size of the moves**: it puts 2% on a
+big drop (actual 14.5%) and 9% on a big rise (actual 22.5%), and over-weights "about the same"
+and "small rise" (0.33 / 0.34 vs actual 0.22 / 0.18). Real hitters moved much further than Jev
+expected, and RPS punishes that.
 
 Cost: 277 calls, 189,677 input tokens, $0.0080 at list price, from OpenRouter's free allowance
 (account balance $0, no card). Full output: [`results/analyze_output.txt`](study2-projection/results/analyze_output.txt).

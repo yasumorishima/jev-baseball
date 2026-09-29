@@ -1,0 +1,54 @@
+bin means from training pairs (wOBA points): [-56.8 -24.4  -5.4  14.   45.2]
+
+1. Direction (correlation with the actual change)
+  Jev expected change 0.568  MARCEL-LITE 0.618
+  sd of forecasts: Jev 13.1  MARCEL-LITE 20.8  actual change 35.9 (points)
+
+2. Weights on regression to the mean (woba_c) and luck (gap), both in wOBA points per point
+  training pairs (actual)  woba_c -0.430  gap -0.426
+  test batters (actual)    woba_c -0.522  gap -0.413
+  Jev                      woba_c -0.201  gap -0.317
+  MARCEL-LITE              woba_c -0.575  gap +0.007
+
+3. Repairing only the width (RPS, lower is better)
+  JEV 0.1795 | MARCEL-LITE 0.1489 (s = 31.9 points)
+  JEV-CENTER (Jev's expected change, MARCEL-LITE's width) 0.1624
+  JEV-TEMP (10-fold CV) 0.1681; chosen (T, w) per fold: (3.1,0.00), (3.1,0.00), (3.0,0.00), (3.2,0.00), (2.9,0.00), (3.2,0.00), (2.7,0.00), (2.9,0.00), (3.2,0.00), (3.1,0.00)
+  (T, w) on all 227, for the chart only: (3.0, 0.00)
+  bin shares after the repair: [0.077 0.232 0.284 0.282 0.125]  actual: [0.145 0.229 0.22  0.181 0.225]
+  JEV-CENTER - MARCEL-LITE +0.0135  95% [+0.0042, +0.0229]
+  JEV-TEMP - MARCEL-LITE +0.0192  95% [+0.0085, +0.0302]
+
+4. Examples
+  biggest drops:
+   i            name  age  pa     woba  xwoba      gap     delta  bin                      jev     jev_d       mar
+ 99  Carlos Narváez   26 446 0.315076  0.293 0.022076 -0.096311    0 0.04 0.33 0.26 0.33 0.04 -0.005328  0.004512
+129       TJ Friedl   29 685 0.332620  0.300 0.032620 -0.096306    0 0.07 0.52 0.19 0.12 0.10 -0.011521 -0.009119
+ 79     Cal Raleigh   28 705 0.392008  0.371 0.021008 -0.095122    0 0.05 0.46 0.40 0.09 0.00 -0.014993 -0.034150
+ 16     Aaron Judge   33 679 0.462771  0.457 0.005771 -0.090990    0 0.09 0.55 0.33 0.03 0.00 -0.019923 -0.074928
+  6 George Springer   35 586 0.407892  0.404 0.003892 -0.088529    0 0.08 0.71 0.20 0.01 0.00 -0.022841 -0.054439
+ 63  Zach McKinstry   30 511 0.332998  0.305 0.027998 -0.067894    0 0.07 0.69 0.18 0.04 0.02 -0.020354 -0.011718
+  biggest rises:
+   i                name  age  pa     woba  xwoba       gap    delta  bin                      jev    jev_d      mar
+155         Curtis Mead   24 264 0.278135  0.291 -0.012865 0.091911    4 0.00 0.03 0.26 0.66 0.05 0.009339 0.033347
+197       Jordan Walker   23 396 0.260233  0.278 -0.017767 0.086564    4 0.00 0.04 0.19 0.66 0.11 0.012185 0.042356
+  7      Randal Grichuk   33 293 0.288571  0.326 -0.037429 0.083616    4 0.00 0.01 0.05 0.43 0.51 0.028531 0.012814
+ 96          Oneil Cruz   26 544 0.294782  0.324 -0.029218 0.077451    4 0.00 0.01 0.06 0.36 0.57 0.030209 0.015081
+201 Pete Crow-Armstrong   23 647 0.323403  0.321  0.002403 0.075692    4 0.01 0.14 0.32 0.48 0.05 0.003242 0.006502
+ 18        Joc Pederson   33 306 0.276294  0.315 -0.038706 0.075385    4 0.00 0.01 0.04 0.31 0.64 0.032781 0.020760
+  largest luck (wOBA - xwOBA):
+   i            name  age  pa     woba  xwoba      gap     delta  bin                      jev     jev_d       mar
+ 35  Miguel Andujar   30 341 0.353823  0.298 0.055823 -0.040109    0 0.38 0.47 0.12 0.02 0.01 -0.032987 -0.026955
+218      Nick Kurtz   22 489 0.418925  0.372 0.046925 -0.038073    0 0.21 0.62 0.15 0.02 0.00 -0.027614 -0.043165
+224    Jacob Wilson   23 523 0.347885  0.304 0.043885 -0.047203    0 0.26 0.50 0.16 0.05 0.03 -0.025800 -0.006736
+212  Hunter Goodman   25 579 0.358774  0.322 0.036774 -0.005780    2 0.10 0.65 0.21 0.04 0.00 -0.022146 -0.015196
+ 88      Kyle Isbel   28 409 0.286958  0.251 0.035958 -0.026753    1 0.01 0.14 0.27 0.43 0.15  0.007332  0.017355
+118 Shea Langeliers   27 523 0.363819  0.329 0.034819 -0.014841    1 0.06 0.67 0.23 0.04 0.00 -0.020471 -0.023063
+  most negative luck:
+   i             name  age  pa     woba  xwoba       gap     delta  bin                      jev     jev_d       mar
+163      Henry Davis   25 283 0.229464  0.293 -0.063536  0.033839    4 0.00 0.01 0.03 0.26 0.70  0.034847  0.063695
+ 36     Luis Torrens   29 283 0.277642  0.338 -0.060358  0.028422    4 0.00 0.02 0.07 0.34 0.57  0.029631  0.024087
+  3   Salvador Perez   35 641 0.310542  0.357 -0.046458 -0.025805    1 0.05 0.29 0.14 0.33 0.19  0.002508 -0.004380
+ 42 Michael Conforto   32 486 0.287477  0.330 -0.042523  0.054728    4 0.00 0.01 0.05 0.24 0.70  0.034459  0.011436
+ 95        Juan Soto   26 715 0.389828  0.429 -0.039172 -0.001682    2 0.06 0.28 0.20 0.37 0.09 -0.002099 -0.028627
+ 98   Andrés Giménez   26 369 0.268940  0.308 -0.039060  0.017152    3 0.00 0.01 0.07 0.41 0.51  0.028144  0.032671

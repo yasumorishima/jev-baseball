@@ -1,0 +1,38 @@
+test batters 227 (scored 227), train pairs 1620, dropouts 82
+arm              RPS  Brier(up)
+JEV           0.1795     0.2100
+CLIM          0.1945     0.2465
+MARCEL-LITE   0.1489     0.1918
+RIDGE(all)    0.1454     0.1925
+
+RIDGE(n) learning curve (RPS over 200 random training draws)
+  n=  10  mean 0.2203  2.5-97.5% [0.1659, 0.3141]
+  n=  20  mean 0.1904  2.5-97.5% [0.1565, 0.2423]
+  n=  50  mean 0.1608  2.5-97.5% [0.1471, 0.1836]
+  n= 100  mean 0.1529  2.5-97.5% [0.1451, 0.1651]
+  n= 300  mean 0.1475  2.5-97.5% [0.1436, 0.1525]
+  n= all  0.1454
+
+Paired bootstrap, RPS(JEV) - RPS(other):
+  vs CLIM         -0.0150  95% [-0.0287, -0.0010]
+  vs MARCEL-LITE  +0.0306  95% [+0.0174, +0.0438]
+  vs RIDGE(all)   +0.0341  95% [+0.0226, +0.0458]
+Paired bootstrap, Brier(up)(JEV) - Brier(up)(other):
+  vs CLIM         -0.0364  95% [-0.0518, -0.0204]
+  vs MARCEL-LITE  +0.0182  95% [+0.0052, +0.0308]
+  vs RIDGE(all)   +0.0175  95% [+0.0069, +0.0278]
+
+Pre-declared reading:
+  -> Jev is worse than a textbook rule (MARCEL-LITE)
+
+Secondary: without extreme lines (|z| > 2.5 on any feature): n = 210 of 227
+  RPS(JEV) - RPS(CLIM       ) -0.0095  95% [-0.0236, +0.0046]
+  RPS(JEV) - RPS(MARCEL-LITE) +0.0276  95% [+0.0140, +0.0412]
+  RPS(JEV) - RPS(RIDGE(all) ) +0.0296  95% [+0.0177, +0.0413]
+
+Recall probe: 50 of 50 blended lines scorable
+  dRPS (blended - original): JEV -0.0539  RIDGE(all) -0.0234  MARCEL-LITE -0.0249  CLIM -0.0220
+  JEV - RIDGE(all)  -0.0306  95% [-0.0547, -0.0069]  (half-width 0.0239 = smallest detectable gap)
+  JEV - MARCEL-LITE -0.0290  95% [-0.0563, -0.0019]  (half-width 0.0272 = smallest detectable gap)
+  JEV - CLIM        -0.0319  95% [-0.0599, -0.0059]  (half-width 0.0270 = smallest detectable gap)
+  -> no evidence of recall (at this power)

@@ -1,0 +1,14 @@
+Direction: correlation with the actual change in wOBA
+  Jev expected bin 0.566 | Jev P(up) 0.579 | MARCEL-LITE 0.618
+
+Which signals each uses (correlation of the forecast with the input; 'actual' = with the real change)
+  wOBA - league (regression to the mean)   Jev -0.740  MARCEL-LITE -0.960  actual -0.599
+  wOBA - xwOBA (luck)                      Jev -0.678  MARCEL-LITE -0.387  actual -0.432
+  age                                      Jev -0.326  MARCEL-LITE -0.403  actual -0.216
+
+Spread: average probability per bin vs how often each bin actually happened
+  big drop    Jev 0.020   actual 0.145
+  small drop  Jev 0.221   actual 0.229
+  about same  Jev 0.329   actual 0.220
+  small rise  Jev 0.343   actual 0.181
+  big rise    Jev 0.086   actual 0.225

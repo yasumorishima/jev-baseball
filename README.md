@@ -1,13 +1,57 @@
 # jev-baseball
 
 Testing [TypeSafe Jev](https://docs.typesafe.ai) — a "decision-only" model that answers typed
-questions with calibrated probabilities instead of text — on **MLB ABS (Automated Ball-Strike)
-pitch challenges**.
+questions with probabilities instead of text — on MLB data, with every study pre-registered
+before the first Jev call.
 
-**Question:** given a challenged pitch, does Jev predict whether the call is overturned as well
-as a one-variable baseline built from the pitch's distance to the strike-zone edge?
+| Study | Question | Pre-declared reading |
+|---|---|---|
+| **2. [Next-season wOBA](study2-projection/)** (main) | Given an anonymised 2025 batting line, how will the hitter's wOBA move in 2026? How many past examples does a fitted model need to match zero-shot Jev? | **Jev has skill but is worse than a textbook rule (Marcel-lite).** It knows the direction; it badly underestimates how far hitters move. |
+| 1. ABS challenges (control) | Will an ABS pitch challenge be overturned? | Baseline better — as it had to be: the outcome is a fixed-zone rule, not a judgement. |
 
-## Result
+## Study 2 — is Jev a usable baseball prior when data are scarce?
+
+Design, metrics and readings: [`study2-projection/PREREG.md`](study2-projection/PREREG.md)
+(committed before any Jev call; an independent audit's fixes were added before the first call).
+227 batters with ≥ 250 PA in both 2025 and 2026 (82 of the 2025 qualifiers did not reach 250 PA in
+2026 and are excluded — the result is about hitters who kept playing). Jev saw no name, team or
+exact age. Outcome: the change in wOBA, in five ordered bins; primary metric RPS (lower is better).
+
+| Forecaster | RPS ↓ | Brier of P(up) ↓ |
+|---|---|---|
+| CLIM (20% per bin) | 0.1945 | 0.2465 |
+| **Jev (zero-shot)** | **0.1795** | **0.2100** |
+| Ridge fitted on 20 past pairs (mean of 200 draws) | 0.1904 | |
+| Ridge fitted on 50 past pairs | 0.1608 | |
+| MARCEL-LITE (shrink to the mean + age rule, no fitting) | 0.1489 | 0.1918 |
+| Ridge fitted on all 1,620 past pairs | 0.1454 | 0.1925 |
+
+- Jev beats climatology: RPS −0.015, 95% [−0.029, −0.001]. So it has *some* skill.
+- Jev loses to the textbook rule: +0.031, 95% [+0.017, +0.044] → **pre-declared reading:
+  "Jev is worse than a textbook rule."** On the learning curve it sits between a ridge fitted on
+  20 and on 50 past examples.
+- Without the 17 extreme lines (any feature |z| > 2.5, i.e. stars that rounding cannot hide),
+  Jev vs climatology is −0.010, 95% [−0.024, +0.005]: the skill is no longer distinguishable from zero.
+- Recall probe (blend each of 50 hitters with a statistical neighbour to destroy identity): Jev did
+  *better* on blended lines than the fitted model did (difference −0.031, 95% [−0.055, −0.007]),
+  the opposite of what recalling players would produce. No evidence of recall at this power
+  (smallest detectable gap ≈ 0.024).
+
+**Where it loses (post-hoc, not pre-registered — [`results/diagnose_output.txt`](study2-projection/results/diagnose_output.txt)).**
+Jev gets the *direction* nearly as well as the rule (correlation with the real change 0.57 vs
+0.62). It uses the right signals — it expects hitters far above the league mean to fall back,
+and it leans on the wOBA − xwOBA "luck" gap even more than reality does (−0.68 vs −0.43). What it
+gets wrong is the **size of the moves**: it puts 2% on a big drop (actual 14.5%) and 9% on a big
+rise (actual 22.5%). Real hitters move much further than Jev believes, and RPS punishes that.
+
+Cost: 277 calls, 189,677 input tokens, $0.0080 at list price, from OpenRouter's free allowance
+(account balance $0, no card). Full output: [`results/analyze_output.txt`](study2-projection/results/analyze_output.txt).
+
+## Study 1 — ABS pitch challenges (control)
+
+In hindsight this was the wrong task for a judgement model: an ABS review compares tracked
+coordinates with a fixed zone, so the outcome is a rule and a one-variable model had to win.
+It is kept as a control and for the StatsAPI data traps it documents.
 
 **The pre-declared reading is "baseline better".** On 250 fixed September challenges,
 Brier(Jev) − Brier(baseline) = **+0.067**, 95% paired-bootstrap interval **[+0.049, +0.084]**
@@ -27,7 +71,7 @@ RAW − DIST Brier = +0.010, 95% [−0.017, +0.036]: no detectable difference in
 interval does not rule out a gap of about 0.04, and RAW is lower on AUC and accuracy.
 Full output: [`results/analyze_output.txt`](results/analyze_output.txt).
 
-### Where Jev loses (post-hoc, not pre-registered)
+### Where Jev loses in Study 1 (post-hoc, not pre-registered)
 
 Jev **ranks** challenges reasonably (AUC 0.84, and similar accuracy to the baseline at a 0.5
 threshold: 0.808 vs 0.816) but its probabilities are **too timid on the clear cases**:
@@ -47,14 +91,14 @@ A side observation: within one inch *inside* the called side, 58% of challenges 
 overturned, so the StatsAPI zone (`strikeZoneTop/Bottom`, `pX/pZ`) does not reproduce the ABS
 zone exactly near the edge (RULE accuracy 0.80).
 
-### Cost
+### Cost of Study 1
 
 420 Jev calls (plus one earlier connectivity test on a hand-written state, not an evaluation row), 254,501 input tokens, **$0.0107 at list price, covered by
 OpenRouter's free allowance for new accounts**: the account's `total_credits` stayed at $0 and no
 card was registered. About $0.000026 per call. The key's $0.01 limit is checked after a call
 completes, so usage ended slightly above it ($0.01071).
 
-## How it works
+### How Study 1 works
 
 | Step | File | What it does |
 |---|---|---|
@@ -72,7 +116,7 @@ no plays), 2,678 challenges. Everything is Python 3.11 standard library. The raw
 The design, the metrics and the pre-declared reading are fixed in [`PREREG.md`](PREREG.md)
 before any Jev call on the evaluation set.
 
-## Two traps in the StatsAPI feed
+### Two traps in the StatsAPI feed
 
 - On a challenged pitch, `details.call.description` is the call **after** the review, so it
   encodes the answer. The original call is inferred from who challenged (the batting team

@@ -11,7 +11,8 @@ as a one-variable baseline built from the pitch's distance to the strike-zone ed
 
 **The pre-declared reading is "baseline better".** On 250 fixed September challenges,
 Brier(Jev) − Brier(baseline) = **+0.067**, 95% paired-bootstrap interval **[+0.049, +0.084]**
-(entirely above 0).
+(entirely above 0). Scope: this model version (`typesafe/jev-1.13-20260917`), this prompt
+format (see `run_jev.py`) and MLB challenges from September 2026 only.
 
 | Arm (n = 250, 145 overturned) | Brier ↓ | AUC ↑ | log loss ↓ | accuracy |
 |---|---|---|---|---|
@@ -21,14 +22,15 @@ Brier(Jev) − Brier(baseline) = **+0.067**, 95% paired-bootstrap interval **[+0
 
 JEV-RAW (Jev given only the raw coordinates) hit the key's $0.01 credit limit after 170 of
 250 rows, as the pre-registration allowed for. On those 170 rows: BASE 0.111 / JEV-DIST 0.192 /
-JEV-RAW 0.202 Brier, AUC 0.926 / 0.817 / 0.773. RAW − DIST = +0.010, 95% [−0.017, +0.036], so
-having to do the geometry itself made no detectable difference to the Brier score.
+JEV-RAW 0.202 Brier, AUC 0.926 / 0.817 / 0.773, accuracy 0.818 / 0.806 / 0.706.
+RAW − DIST Brier = +0.010, 95% [−0.017, +0.036]: no detectable difference in Brier, but the
+interval does not rule out a gap of about 0.04, and RAW is lower on AUC and accuracy.
 Full output: [`results/analyze_output.txt`](results/analyze_output.txt).
 
 ### Where Jev loses (post-hoc, not pre-registered)
 
-Jev **ranks** challenges reasonably (AUC 0.84, and the same accuracy as the baseline at a 0.5
-threshold) but its probabilities are **too timid on the clear cases**:
+Jev **ranks** challenges reasonably (AUC 0.84, and similar accuracy to the baseline at a 0.5
+threshold: 0.808 vs 0.816) but its probabilities are **too timid on the clear cases**:
 
 | Pitch position vs the original call | n | actually overturned | Jev | baseline |
 |---|---|---|---|---|
@@ -47,7 +49,7 @@ zone exactly near the edge (RULE accuracy 0.80).
 
 ### Cost
 
-420 Jev calls (plus one test call), 254,501 input tokens, **$0.0107 at list price, covered by
+420 Jev calls (plus one earlier connectivity test on a hand-written state, not an evaluation row), 254,501 input tokens, **$0.0107 at list price, covered by
 OpenRouter's free allowance for new accounts**: the account's `total_credits` stayed at $0 and no
 card was registered. About $0.000026 per call. The key's $0.01 limit is checked after a call
 completes, so usage ended slightly above it ($0.01071).
@@ -62,7 +64,8 @@ completes, so usage ended slightly above it ($0.01071).
 | 4 | `analyze.py` | Brier score, AUC, log loss and accuracy for Jev and the baseline, with a paired bootstrap. |
 | 5 | `diagnose.py` | Post-hoc (not pre-registered): calibration bins and behaviour by distance band. |
 
-Everything is Python 3.11 standard library. The raw game data are not committed; rerun
+Collected: 778 final regular-season games scheduled, 777 with play data (game 823490 returned
+no plays), 2,678 challenges. Everything is Python 3.11 standard library. The raw game data are not committed; rerun
 `./collect.sh 2026-08-01 2026-09-28` then `python3 prepare.py` (the sample's md5 is in
 `PREREG.md`). Jev's answers are in [`results/jev_answers.jsonl`](results/jev_answers.jsonl).
 

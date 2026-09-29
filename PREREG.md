@@ -78,7 +78,7 @@ completed, paired with BASE on exactly those rows, and labelled as partial.
 
 ## Frozen sample
 
-- md5 of `eval_sample.json`: (filled in before the first Jev call)
+- md5 of `eval_sample.json`: `289725a5e351b8e085b8e995c37ad04d` (2,678 challenges from 777 games; train 1,431 / eval 1,247; sample 250, 145 overturned)
 
 ## Amendments
 

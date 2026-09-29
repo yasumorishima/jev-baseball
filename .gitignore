@@ -10,3 +10,7 @@ eval_sample.json
 train.json
 eval_all.json
 arms.json
+*.parquet
+study2-projection/train.json
+study2-projection/test.json
+study2-projection/probe.json

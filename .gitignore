@@ -1,0 +1,8 @@
+challenges.jsonl
+games/
+scheduled.txt
+*.log
+jev_raw.jsonl
+__pycache__/
+.env
+*.env

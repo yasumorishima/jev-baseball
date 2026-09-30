@@ -59,7 +59,7 @@ w_mar, *_ = np.linalg.lstsq(X(test), mar, rcond=None)
 w_test, *_ = np.linalg.lstsq(X(test), d, rcond=None)
 for name, w in (("training pairs (actual)", w_train), ("test batters (actual)", w_test),
                 ("Jev", w_jev), ("MARCEL-LITE", w_mar)):
-    print(f"  {name:24s} woba_c {w[1]:+.3f}  gap {w[2]:+.3f}")
+    print(f"  {name:24s} intercept {w[0] * 1000:+.1f}  woba_c {w[1]:+.3f}  gap {w[2]:+.3f}")
 
 print("\n3. Repairing only the width (RPS, lower is better)")
 res_sd = float(np.std([u["delta"] - marcel(u) for u in train]))
@@ -96,9 +96,21 @@ print(f"  (T, w) on all 227, for the chart only: ({full[0]:.1f}, {full[1]:.2f})"
 tp = temp(P, *full)
 print("  bin shares after the repair:", np.round(tp.mean(0), 3), " actual:", np.round(np.bincount(b, minlength=5) / n, 3))
 
+# c) add back the regression to the mean Jev under-uses: shift Jev's expected change by
+#    (training weight - Jev's own weight) x (wOBA - league). Uses no test outcome: the training weight
+#    comes from the 1,620 pairs and Jev's weight from Jev's forecasts.
+shift = (w_train[1] - w_jev[1]) * np.array([u["woba_c"] for u in test])
+regr = np.array([rps(normal_bins(jev_delta[i] + shift[i], res_sd, cuts), b[i]) for i in range(n)])
+print(f"  JEV-CENTER + missing regression {regr.mean():.4f}")
+# the weights formula alone (training pairs), for the named examples
+wf = X(test) @ w_train
+print("  training-weights formula for examples: " + ", ".join(
+    f"{test[i]['player_id']}:{wf[i] * 1000:+.0f}" for i in (16, 79, 6, 163, 42)))
+print(f"  lowest / highest expected change Jev can express: {bin_mean[0] * 1000:+.1f} / {bin_mean[4] * 1000:+.1f} points")
+
 rngb = np.random.default_rng(20260929)
 mrow = np.array([rps(normal_bins(mar[i], res_sd, cuts), b[i]) for i in range(n)])
-for name, a in (("JEV-CENTER", center), ("JEV-TEMP", cv)):
+for name, a in (("JEV-CENTER", center), ("JEV-TEMP", cv), ("JEV-CENTER+REGR", regr)):
     diffs = [(a[s] - mrow[s]).mean() for s in (rngb.integers(0, n, n) for _ in range(10000))]
     print(f"  {name} - MARCEL-LITE {np.mean(a - mrow):+.4f}  95% [{np.percentile(diffs, 2.5):+.4f}, {np.percentile(diffs, 97.5):+.4f}]")
 

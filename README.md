@@ -36,18 +36,29 @@ exact age. Outcome: the change in wOBA, in five ordered bins; primary metric RPS
 - Recall probe (blend each of 50 hitters with a statistical neighbour to destroy identity): Jev's
   score improved more on blended lines than the fitted model's (−0.031, 95% [−0.055, −0.007]).
   Blending also narrows the outcomes (sd of Δ 0.036 → 0.029 on these 50), which favours narrow
-  forecasts like Jev's, so this is not evidence *against* recall either; it only rules out a
-  recall penalty larger than about 0.024.
+  forecasts like Jev's. Recall would make Jev *worse* on blended lines, the narrowing makes it
+  *better*, and only the sum is observed, so **this probe cannot say whether Jev recalls players**
+  (an earlier version of this README said it ruled out a penalty larger than 0.024; it does not).
 
 **Where it loses (post-hoc, not pre-registered — [`results/diagnose_output.txt`](study2-projection/results/diagnose_output.txt)).**
 Jev gets the *direction* nearly as well as the rule (correlation with the real change 0.57 vs
 0.62). It uses the right signals — it expects hitters far above the league mean to fall back,
-and it leans on the wOBA − xwOBA "luck" gap strongly (its forecast's correlation with the gap is
-−0.68; the gap's correlation with the real change is −0.43). What it gets wrong, in this sample
+and it uses the wOBA − xwOBA "luck" gap. Fitting both signals jointly
+([`deepdive.py`](study2-projection/deepdive.py)), Jev's forecast gives back 0.20 of a point per point
+above the league mean and 0.32 per point of luck, against 0.43 and 0.43 in the 1,620 training pairs:
+**it under-uses regression to the mean most**. (An earlier version read the marginal correlations
+−0.68 vs −0.43 as "leans on luck strongly"; the joint fit says luck is used a bit *less* than it should
+be.) What it gets wrong, in this sample
 (2025→26, hitters with ≥ 250 PA in both seasons), is the **size of the moves**: it puts 2% on a
 big drop (actual 14.5%) and 9% on a big rise (actual 22.5%), and over-weights "about the same"
 and "small rise" (0.33 / 0.34 vs actual 0.22 / 0.18). Real hitters moved much further than Jev
 expected, and RPS punishes that.
+
+Repairs, all post-hoc and without new Jev calls ([`results/deepdive_output.txt`](study2-projection/results/deepdive_output.txt)):
+Jev's expected change with MARCEL-LITE's width gives RPS 0.1624 (vs MARCEL-LITE +0.014,
+95% [+0.004, +0.023]); flattening Jev's bins with a temperature chosen by 10-fold CV gives 0.1681;
+also adding the missing regression to the mean ((0.43 − 0.20) × (wOBA − league), both weights fixed
+without 2026 outcomes) gives 0.1505, indistinguishable from MARCEL-LITE (+0.002, 95% [−0.005, +0.008]).
 
 Cost: 277 calls, 189,677 input tokens, $0.0080 at list price, from OpenRouter's free allowance
 (account balance $0, no card). Full output: [`results/analyze_output.txt`](study2-projection/results/analyze_output.txt).

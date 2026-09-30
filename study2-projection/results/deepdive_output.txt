@@ -5,10 +5,10 @@ bin means from training pairs (wOBA points): [-56.8 -24.4  -5.4  14.   45.2]
   sd of forecasts: Jev 13.1  MARCEL-LITE 20.8  actual change 35.9 (points)
 
 2. Weights on regression to the mean (woba_c) and luck (gap), both in wOBA points per point
-  training pairs (actual)  woba_c -0.430  gap -0.426
-  test batters (actual)    woba_c -0.522  gap -0.413
-  Jev                      woba_c -0.201  gap -0.317
-  MARCEL-LITE              woba_c -0.575  gap +0.007
+  training pairs (actual)  intercept +1.1  woba_c -0.430  gap -0.426
+  test batters (actual)    intercept +2.5  woba_c -0.522  gap -0.413
+  Jev                      intercept +1.5  woba_c -0.201  gap -0.317
+  MARCEL-LITE              intercept +4.9  woba_c -0.575  gap +0.007
 
 3. Repairing only the width (RPS, lower is better)
   JEV 0.1795 | MARCEL-LITE 0.1489 (s = 31.9 points)
@@ -16,8 +16,12 @@ bin means from training pairs (wOBA points): [-56.8 -24.4  -5.4  14.   45.2]
   JEV-TEMP (10-fold CV) 0.1681; chosen (T, w) per fold: (3.1,0.00), (3.1,0.00), (3.0,0.00), (3.2,0.00), (2.9,0.00), (3.2,0.00), (2.7,0.00), (2.9,0.00), (3.2,0.00), (3.1,0.00)
   (T, w) on all 227, for the chart only: (3.0, 0.00)
   bin shares after the repair: [0.077 0.232 0.284 0.282 0.125]  actual: [0.145 0.229 0.22  0.181 0.225]
+  JEV-CENTER + missing regression 0.1505
+  training-weights formula for examples: 592450:-66, 663728:-42, 543807:-41, 680779:+64, 624424:+30
+  lowest / highest expected change Jev can express: -56.8 / +45.2 points
   JEV-CENTER - MARCEL-LITE +0.0135  95% [+0.0042, +0.0229]
   JEV-TEMP - MARCEL-LITE +0.0192  95% [+0.0085, +0.0302]
+  JEV-CENTER+REGR - MARCEL-LITE +0.0016  95% [-0.0049, +0.0083]
 
 4. Examples
   biggest drops:

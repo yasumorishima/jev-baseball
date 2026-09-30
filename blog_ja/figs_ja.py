@@ -134,7 +134,7 @@ for ax, col, c, lab in ((axs[0], 0, ORANGE, "Jev"), (axs[1], 1, SUB, "Marcel 法
     base(ax, left=True); ax.spines["left"].set_color(GRAY)
 axs[0].set_ylabel("予想した変化", fontsize=13, color=SUB)
 axs[1].text(20, -95, "点線＝予想と実際が同じ", fontsize=12, color=SUB)
-title(fig, "Jev の予想は、実際の動きよりずっと小さい", "打者 227 人・予想のばらつき（標準偏差）Jev 13・ルール 21・実際 36")
+title(fig, "Jev の予想は、ルールと比べても 6 割ほどしか動かない", "打者 227 人・予想のばらつき（標準偏差）Jev 13・ルール 21（当たる予想でも実際の 36 より小さくなる）")
 fig.savefig(f"{OUT}/ja_5_scatter.png"); plt.close(fig)
 
 # 6. Study 2: weights on regression to the mean and on luck (joint least squares)
@@ -172,21 +172,21 @@ base(ax)
 fig.text(0.04, 0.83, "● 実際", fontsize=13, color=INK, ha="left", va="top")
 fig.text(0.16, 0.83, "● Jev の予想", fontsize=13, color=ORANGE, ha="left", va="top")
 fig.text(0.34, 0.83, "● Marcel 法風のルール", fontsize=13, color=SUB, ha="left", va="top")
-title(fig, "大きく下がった強打者を、Jev は小さな下げとしか見なかった")
+title(fig, "大きく下がった強打者は外し、運の悪かった打者は当てた")
 fig.savefig(f"{OUT}/ja_7_examples.png"); plt.close(fig)
 
 # 8. Study 2: repairing the width only
 arms8 = [("Jev（そのまま）", 0.1795, ORANGE), ("Jev の予想の中心 ＋\nルールと同じ幅", 0.1624, ORANGE),
-         ("Marcel 法風のルール", 0.1489, GRAY)]
-fig, ax = plt.subplots(figsize=(10, 5.2), dpi=150)
-fig.subplots_adjust(top=0.70, left=0.30, right=0.92, bottom=0.08)
+         ("さらに、足りない\n平均への回帰を足す", 0.1505, ORANGE), ("Marcel 法風のルール", 0.1489, GRAY)]
+fig, ax = plt.subplots(figsize=(10, 6.0), dpi=150)
+fig.subplots_adjust(top=0.74, left=0.30, right=0.92, bottom=0.08)
 for i, (lab, r, c) in enumerate(arms8):
     v = clim - r; y = len(arms8) - 1 - i
-    ax.barh(y, v, color=c, height=0.55, alpha=1.0 if i != 1 else 0.55)
+    ax.barh(y, v, color=c, height=0.55, alpha=1.0 if i == 0 or c == GRAY else 0.55)
     ax.text(v + 0.0008, y, f"{v:.3f}", va="center", fontsize=15, color=ORANGE if c == ORANGE else SUB,
             weight="bold" if c == ORANGE else "normal")
 ax.set_yticks(range(len(arms8))[::-1]); ax.set_yticklabels([a[0] for a in arms8], fontsize=14)
 ax.set_xlim(0, 0.058); ax.set_xticks([]); base(ax); ax.spines["bottom"].set_visible(False)
-title(fig, "幅だけ直すと差は半分以上縮まるが、まだルールに届かない", "当て推量の RPS 0.195 から何ポイント下げたか（大きいほど良い）・結果を見た後の分析")
+title(fig, "幅と平均への回帰を補うと、Jev の予想はルールに並ぶ", "当て推量の RPS 0.195 から何ポイント下げたか（大きいほど良い）・結果を見た後の分析")
 fig.savefig(f"{OUT}/ja_8_width.png"); plt.close(fig)
 print("ok2")

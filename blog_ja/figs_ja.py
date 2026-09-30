@@ -171,7 +171,8 @@ ax.set_xlabel("2025 → 2026 の wOBA の変化（1 = 0.001）", fontsize=13, co
 base(ax)
 fig.text(0.04, 0.83, "● 実際", fontsize=13, color=INK, ha="left", va="top")
 fig.text(0.16, 0.83, "● Jev の予想", fontsize=13, color=ORANGE, ha="left", va="top")
-fig.text(0.34, 0.83, "● Marcel 法風のルール", fontsize=13, color=SUB, ha="left", va="top")
+fig.text(0.34, 0.83, "●", fontsize=13, color=GRAY, ha="left", va="top")
+fig.text(0.36, 0.83, "Marcel 法風のルール", fontsize=13, color=SUB, ha="left", va="top")
 title(fig, "大きく下がった強打者は外し、運の悪かった打者は当てた")
 fig.savefig(f"{OUT}/ja_7_examples.png"); plt.close(fig)
 
@@ -187,6 +188,6 @@ for i, (lab, r, c) in enumerate(arms8):
             weight="bold" if c == ORANGE else "normal")
 ax.set_yticks(range(len(arms8))[::-1]); ax.set_yticklabels([a[0] for a in arms8], fontsize=14)
 ax.set_xlim(0, 0.058); ax.set_xticks([]); base(ax); ax.spines["bottom"].set_visible(False)
-title(fig, "幅と平均への回帰を補うと、Jev の予想はルールに並ぶ", "当て推量の RPS 0.195 から何ポイント下げたか（大きいほど良い）・結果を見た後の分析")
+title(fig, "幅と平均への回帰を補った予想は、ルールと区別がつかない", "当て推量の RPS 0.195 から何ポイント下げたか（大きいほど良い）・結果を見た後の分析")
 fig.savefig(f"{OUT}/ja_8_width.png"); plt.close(fig)
 print("ok2")

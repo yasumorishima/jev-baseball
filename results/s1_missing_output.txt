@@ -1,0 +1,17 @@
+Aug-Sep rows 3543 (dropped 0); review on pitch 2650, on play 893
+              n  overturned
+review_on                  
+pitch      2650       0.568
+play        893       0.486
+play-level rows: share where the final call ends the PA: 0.252
+y                           0     1   All
+review_on original_call                  
+pitch     ball            702   838  1540
+          strike          442   668  1110
+play      ball            152   329   481
+          strike          307   105   412
+All                      1603  1940  3543
+fit on Aug old set (pitch only) w=[0.193 2.168] -> Sep old set  n 1238 Brier 0.1121 overturned 0.570
+fit on Aug old set (pitch only) w=[0.193 2.168] -> Sep full     n 1650 Brier 0.1015 overturned 0.545
+fit on Aug full set             w=[0.244 2.194] -> Sep old set  n 1238 Brier 0.1123 overturned 0.570
+fit on Aug full set             w=[0.244 2.194] -> Sep full     n 1650 Brier 0.1017 overturned 0.545

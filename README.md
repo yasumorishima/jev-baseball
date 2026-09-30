@@ -65,6 +65,17 @@ Cost: 277 calls, 189,677 input tokens, $0.0080 at list price, from OpenRouter's 
 
 ## Study 1 — ABS pitch challenges (control)
 
+> **Correction (2026-09-30): the extractor missed a quarter of the challenges.** When the final call of a
+> challenged pitch ends the plate appearance (strikeout / walk), StatsAPI stores `reviewDetails` on the
+> **play** (`allPlays[k].reviewDetails`), not on the pitch event. `extract.jq` read only the pitch event.
+> Re-collecting Aug 1 – Sep 27 with both locations: 3,543 challenges, of which 893 (25%) were missed;
+> their overturn rate is 0.486 vs 0.568 for the rows we had. All 250 evaluation rows come from the
+> captured part, so Study 1 describes challenges on which the plate appearance went on. The
+> distance-only baseline refitted on the full August set scores Brier 0.102 on the full September set
+> (0.112 on the captured part). Jev was not re-asked (the key's free allowance is spent). The fixed
+> extractor ([`extract2.jq`](extract2.jq)) and the check ([`s1_missing.py`](s1_missing.py),
+> output [`results/s1_missing_output.txt`](results/s1_missing_output.txt)) are in this repo.
+
 In hindsight this was the wrong task for a judgement model: an ABS review compares tracked
 coordinates with a fixed zone, so the outcome is a rule and a one-variable model had to win.
 It is kept as a control and for the StatsAPI data traps it documents.

@@ -67,7 +67,7 @@ mean = [0.2203, 0.1904, 0.1608, 0.1529, 0.1475, 0.1454]
 lo = [0.1659, 0.1565, 0.1471, 0.1451, 0.1436, 0.1454]
 hi = [0.3141, 0.2423, 0.1836, 0.1651, 0.1525, 0.1454]
 fig, ax = plt.subplots(figsize=(10, 6), dpi=150)
-fig.subplots_adjust(top=0.78, left=0.1, right=0.80, bottom=0.14)
+fig.subplots_adjust(top=0.78, left=0.1, right=0.74, bottom=0.14)
 ax.fill_between(ns, lo, hi, color=LIGHT, lw=0)
 ax.plot(ns, mean, color=SUB, lw=3, marker="o", ms=7)
 ax.axhline(0.1795, color=ORANGE, lw=3)
@@ -96,7 +96,8 @@ for i in x:
     ax.text(i + w/2, jev[i] + 0.008, f"{jev[i]*100:.0f}%", ha="center", fontsize=13, color=ORANGE, weight="bold")
 ax.set_xticks(list(x)); ax.set_xticklabels(bins, fontsize=14); ax.set_yticks([]); ax.set_ylim(0, 0.39)
 base(ax)
-fig.text(0.04, 0.83, "■ 実際に起きた割合", fontsize=13, color=SUB, ha="left", va="top")
+fig.text(0.04, 0.83, "■", fontsize=13, color=GRAY, ha="left", va="top")
+fig.text(0.06, 0.83, "実際に起きた割合", fontsize=13, color=SUB, ha="left", va="top")
 fig.text(0.30, 0.83, "■ Jev の確率の平均", fontsize=13, color=ORANGE, ha="left", va="top")
 title(fig, "Jev は「大きく動く」をほとんど想定していない")
 fig.savefig(f"{OUT}/ja_4_spread.png"); plt.close(fig)

@@ -58,7 +58,7 @@ for t, a in zip(ax.get_yticklabels(), arms):
         t.set_color(ORANGE); t.set_weight("bold")
 ax.set_xlim(0, 0.058); ax.set_xticks([])
 base(ax); ax.spines["bottom"].set_visible(False)
-title(fig, "Jev's gain over guessing is a third of the Marcel-style rule's", "227 hitters. How far below guessing's RPS of 0.195 (bigger is better)")
+title(fig, "Jev's gain over guessing is a third of the Marcel-style rule's", "227 hitters. Improvement on the RPS of guessing, 0.195 (bigger is better)")
 fig.savefig(f"{OUT}/en_2_gain.png"); plt.close(fig)
 
 # 3. Study 2: learning curve
@@ -67,7 +67,7 @@ mean = [0.2203, 0.1904, 0.1608, 0.1529, 0.1475, 0.1454]
 lo = [0.1659, 0.1565, 0.1471, 0.1451, 0.1436, 0.1454]
 hi = [0.3141, 0.2423, 0.1836, 0.1651, 0.1525, 0.1454]
 fig, ax = plt.subplots(figsize=(10, 6), dpi=150)
-fig.subplots_adjust(top=0.78, left=0.1, right=0.80, bottom=0.14)
+fig.subplots_adjust(top=0.78, left=0.1, right=0.74, bottom=0.14)
 ax.fill_between(ns, lo, hi, color=LIGHT, lw=0)
 ax.plot(ns, mean, color=SUB, lw=3, marker="o", ms=7)
 ax.axhline(0.1795, color=ORANGE, lw=3)
@@ -96,7 +96,8 @@ for i in x:
     ax.text(i + w/2, jev[i] + 0.008, f"{jev[i]*100:.0f}%", ha="center", fontsize=13, color=ORANGE, weight="bold")
 ax.set_xticks(list(x)); ax.set_xticklabels(bins, fontsize=14); ax.set_yticks([]); ax.set_ylim(0, 0.39)
 base(ax)
-fig.text(0.04, 0.83, "■ What actually happened", fontsize=13, color=SUB, ha="left", va="top")
+fig.text(0.04, 0.83, "■", fontsize=13, color=GRAY, ha="left", va="top")
+fig.text(0.06, 0.83, "What actually happened", fontsize=13, color=SUB, ha="left", va="top")
 fig.text(0.30, 0.83, "■ Jev's average probability", fontsize=13, color=ORANGE, ha="left", va="top")
 title(fig, "Jev rarely expects big moves")
 fig.savefig(f"{OUT}/en_4_spread.png"); plt.close(fig)
@@ -134,7 +135,7 @@ for ax, col, c, lab in ((axs[0], 0, ORANGE, "Jev"), (axs[1], 1, SUB, "Marcel-sty
     base(ax, left=True); ax.spines["left"].set_color(GRAY)
 axs[0].set_ylabel("Forecast change", fontsize=13, color=SUB)
 axs[1].text(0, -95, "Dashed: forecast = actual", fontsize=12, color=SUB)
-title(fig, "Jev's forecasts move only about 60% as much as the rule's", "227 hitters. SD of forecasts: Jev 13, rule 21 (even a good forecast is below the actual 36)")
+title(fig, "Jev's forecasts move only about 60% as much as the rule's", "227 hitters. SD of forecasts: Jev 13, rule 21 (any good forecast varies less than the actual 36)")
 fig.savefig(f"{OUT}/en_5_scatter.png"); plt.close(fig)
 
 # 6. Study 2: weights on regression to the mean and on luck (joint least squares)
@@ -149,7 +150,7 @@ for i, (lab, act_w, jev_w) in enumerate(items):
 ax.set_yticks([1, 0]); ax.set_yticklabels([x[0] for x in items], fontsize=14)
 ax.set_xlim(0, 0.55); ax.set_xticks([])
 base(ax); ax.spines["bottom"].set_visible(False)
-title(fig, "Jev uses luck, but not much regression to the mean", "Points given back next season per point above, in the forecast (actual: 1,620 past pairs)")
+title(fig, "Jev uses luck, but not much regression to the mean", "Share of each point given back next season (actual: from 1,620 past pairs)")
 fig.savefig(f"{OUT}/en_6_weights.png"); plt.close(fig)
 
 # 7. Study 2: named examples (wOBA points)
@@ -188,6 +189,6 @@ for i, (lab, r, c) in enumerate(arms8):
             weight="bold" if c == ORANGE else "normal")
 ax.set_yticks(range(len(arms8))[::-1]); ax.set_yticklabels([a[0] for a in arms8], fontsize=14)
 ax.set_xlim(0, 0.058); ax.set_xticks([]); base(ax); ax.spines["bottom"].set_visible(False)
-title(fig, "Repair width and regression, and it matches the rule", "How far below guessing's RPS of 0.195 (bigger is better). Post-hoc analysis")
+title(fig, "Width and regression filled in: indistinguishable from the rule", "Improvement on the RPS of guessing, 0.195 (bigger is better). Post-hoc")
 fig.savefig(f"{OUT}/en_8_width.png"); plt.close(fig)
 print("ok2")

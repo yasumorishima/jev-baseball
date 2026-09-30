@@ -4,6 +4,8 @@ Testing [TypeSafe Jev](https://docs.typesafe.ai) — a "decision-only" model tha
 questions with probabilities instead of text — on MLB data, with every study pre-registered
 before the first Jev call.
 
+Write-up (Japanese, with charts): [Qiita](https://qiita.com/ussu_ussu_ussu/items/cc28f711396515c1fb31)
+
 | Study | Question | Pre-declared reading | Post-hoc diagnosis |
 |---|---|---|---|
 | **2. [Next-season wOBA](study2-projection/)** (main) | Given an anonymised 2025 batting line, how will the hitter's wOBA move in 2026? How many past examples does a fitted model need to match zero-shot Jev? | **Jev has skill but is worse than a textbook rule (Marcel-lite).** | It gets the direction nearly right but puts far too little probability on big moves. |

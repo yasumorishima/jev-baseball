@@ -4,7 +4,7 @@ Testing [TypeSafe Jev](https://docs.typesafe.ai) — a "decision-only" model tha
 questions with probabilities instead of text — on MLB data, with every study pre-registered
 before the first Jev call.
 
-Write-up (Japanese, with charts): [Qiita](https://qiita.com/ussu_ussu_ussu/items/cc28f711396515c1fb31)
+Write-up with charts: [Japanese (Qiita)](https://qiita.com/ussu_ussu_ussu/items/cc28f711396515c1fb31) / [English (DEV.to)](https://dev.to/yasumorishima/asking-a-decision-only-ai-typesafe-jev-to-forecast-next-seasons-hitting-worth-about-20-to-50-360k)
 
 | Study | Question | Pre-declared reading | Post-hoc diagnosis |
 |---|---|---|---|

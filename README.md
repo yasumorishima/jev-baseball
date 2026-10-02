@@ -9,7 +9,39 @@ Write-up with charts: [Japanese (Qiita)](https://qiita.com/ussu_ussu_ussu/items/
 | Study | Question | Pre-declared reading | Post-hoc diagnosis |
 |---|---|---|---|
 | **2. [Next-season wOBA](study2-projection/)** (main) | Given an anonymised 2025 batting line, how will the hitter's wOBA move in 2026? How many past examples does a fitted model need to match zero-shot Jev? | **Jev has skill but is worse than a textbook rule (Marcel-lite).** | It gets the direction nearly right but puts far too little probability on big moves. |
+| 3. [Pre-draft reports + numbers](study3-draft/) | Jev reads the masked MLB.com pre-draft report and returns six yes/no features; does a model with them predict reaching the majors better than draft-time numbers alone? | **NO GAIN** (log-loss difference against a shuffled-feature floor, p 0.46). | Praise of makeup separates players within pick tiers (AUC 0.60), but it moves with report length and prospect rank. Exploratory only. |
 | 1. ABS challenges (control) | Will an ABS pitch challenge be overturned? | Baseline better — as it had to be: the outcome is a fixed-zone rule, not a judgement. | Too timid on clear cases. |
+
+## Study 3 — Jev as a feature extractor: pre-draft reports blended with numbers
+
+Studies 1 and 2 asked Jev to turn numbers into a number, where a fitted model wins. Jev is built
+to read text and return typed judgments that ordinary code then uses, so Study 3 gives it text with
+no numeric twin: the MLB.com pre-draft report that StatsAPI carries for each pick (`blurb`, 2017 on).
+
+- **Data**: 310 players drafted 2017-2020 (random, sized to the free credit), outcome = MLB debut by
+  2026-10-02 (124 debuts). Names, initials and school words masked. The report text is MLB's and is
+  not committed; `collect.py` rebuilds it.
+- **Arms**: NUM = logistic regression on pick, pre-draft rank, slot value, age, bats/throws, role,
+  year. TEXT = NUM + six Jev probabilities (hitting doubts, command doubts, injury, raw, upside,
+  makeup praised). Out-of-fold over 20 x 10-fold CV.
+- **Pre-registered** in [`PREREG.md`](study3-draft/PREREG.md) (commit `fd52851`, before any scored
+  call); two opus pre-run audits changed the primary rule to a shuffled-feature floor, removed the
+  signing bonus (it encodes whether the player signed) and de-duplicated re-drafted players.
+
+**Result: NO GAIN.** Log loss NUM 0.6120 / TEXT 0.6224, AUC 0.698 / 0.687. The difference (+0.0104)
+sits on the floor of the same six columns shuffled within role x pick tier (mean +0.0094, p 0.46).
+An independent re-implementation gave the same reading (floor p 0.39). The memory probe ("did this
+player reach the majors?", never a model input) had AUC 0.605 alone and added nothing.
+
+**Exploratory (not pre-registered).** Of the six readings, "makeup, work ethic or baseball
+intelligence is praised" separates debuts within pick tiers best (AUC 0.604, bootstrap 0.53-0.68),
+but the report's length alone does almost as well (0.597), makeup correlates with having a prospect
+rank (-0.44), and the effect sits in the first 30 picks and after pick 300. It is a lead for a
+larger, registered test, not a finding.
+
+**Limits.** 310 players is enough only for a large effect. Masking hides names but not relatives,
+teammates or mascots (6 of 10 audited texts kept such clues). Cost: 310 calls, 253,708 input tokens,
+$0.0107 on OpenRouter's free allowance.
 
 ## Study 2 — is Jev a usable baseball prior when data are scarce?
 

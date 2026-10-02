@@ -9,8 +9,49 @@ Write-up with charts: [Japanese (Qiita)](https://qiita.com/ussu_ussu_ussu/items/
 | Study | Question | Pre-declared reading | Post-hoc diagnosis |
 |---|---|---|---|
 | **2. [Next-season wOBA](study2-projection/)** (main) | Given an anonymised 2025 batting line, how will the hitter's wOBA move in 2026? How many past examples does a fitted model need to match zero-shot Jev? | **Jev has skill but is worse than a textbook rule (Marcel-lite).** | It gets the direction nearly right but puts far too little probability on big moves. |
+| 4. [Foreign players in NPB](study4-foreign/) | Jev reads the player's Wikipedia articles (ja + en) as they stood before he moved to Japan and returns five yes/no features. Does a model with them predict his first NPB season better than his MLB numbers alone? | **NO GAIN** for batters (OPS_rel, p 0.41) and pitchers (K-BB%, p 0.62) against a shuffled-feature floor. | Jev did read the text: "hard fastball" scores 0.89 when the article gives 95+ mph and 0.34 otherwise. The readings still add nothing out of sample at n 51 / 69. |
 | 3. [Pre-draft reports + numbers](study3-draft/) | Jev reads the masked MLB.com pre-draft report and returns six yes/no features; does a model with them predict reaching the majors better than draft-time numbers alone? | **NO GAIN** (log-loss difference against a shuffled-feature floor, p 0.46). | Praise of makeup separates players within pick tiers (AUC 0.60), but it moves with report length and prospect rank. Exploratory only. |
 | 1. ABS challenges (control) | Will an ABS pitch challenge be overturned? | Baseline better — as it had to be: the outcome is a fixed-zone rule, not a judgement. | Too timid on clear cases. |
+
+## Study 4 — foreign players in NPB: pre-arrival Wikipedia text blended with MLB numbers
+
+The case behind Study 3. MLB numbers barely predict a foreign player's first NPB season (the
+[npb-foreign-statcast](https://github.com/yasumorishima/npb-foreign-statcast) pillar-1 study). Can text
+written before he arrived add something?
+
+- **Text**: the ja.wikipedia revision before 1 March of the first NPB year and the en.wikipedia revision
+  before 1 January, cleaned of markup, with the player's own names masked. An **identity gate** keeps an
+  article only if its Wikidata MLB ID matches the player. A pre-freeze audit found that a name search had
+  returned Randy Bass's article for Anthony Bass, a disambiguation page, a team page and a namesake. The
+  text is CC BY-SA and is not committed; the scripts rebuild it from revision ids.
+- **Players**: 2016-2025 arrivals with MLB pitch data; 174 called; primary rows 51 batters
+  (>= 100 PA) and 69 pitchers (>= 30 IP).
+- **Arms**: NUM = ridge on the pillar-1 MLB numbers plus text-length controls. TEXT = NUM plus five Jev
+  probabilities: power, contact concern, discipline, injury and declining for batters; velocity, put-away
+  pitch, control concern, injury and declining for pitchers. Leave-one-arrival-year-out.
+- **Pre-registered** in [`PREREG.md`](study4-foreign/PREREG.md) (commit `67dce06`) after two opus audits.
+  They added the identity gate and raw-response logging, moved the memory probe into separate requests,
+  and changed ADDS to require that TEXT also beat NUM outright.
+
+**Result: NO GAIN.**
+
+| | MAE NUM | MAE TEXT | Shuffled-feature floor (mean) | p |
+|---|---|---|---|---|
+| Batters | 0.1308 | 0.1364 | +0.0064 | 0.41 |
+| Pitchers | 0.0451 | 0.0489 | +0.0033 | 0.62 |
+
+The real readings did no better than the same readings shuffled within arrival year. An independent
+re-implementation gave the same reading.
+
+**Jev did read the articles.** The features spread out (sd 0.14-0.39) and follow the text. Pitchers
+whose article gives a fastball of 95+ mph or 150+ km/h average 0.89 on "hard fastball" and the others
+0.34 (AUC 0.88). Injury, release and home-run words give AUCs of 0.91-0.95. The memory probe ("strong
+first season in Japan", asked separately, never an input) showed no detectable signal (AUC 0.43 / 0.58).
+
+**Limits.** At n 51 / 69 only a large gain is detectable, so this is not evidence that the text
+carries nothing. Pitchers' signs all went the declared way. Post-hoc, in-sample correlations exist
+(e.g. put-away pitch +0.30) and are not claimed. Cost: 348 calls (main + probe), 1.07M input tokens,
+$0.045 on a free-tier key. Details: [`RESULTS.md`](study4-foreign/RESULTS.md).
 
 ## Study 3 — Jev as a feature extractor: pre-draft reports blended with numbers
 

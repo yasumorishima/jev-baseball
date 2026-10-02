@@ -1,0 +1,7 @@
+run1 fail at 20: (1, 'answered 17 unusable (this run) 2 of 174')
+raw lines 19 answers 17
+run2 full: (0, 'answered 150 unusable (this run) 22 of 174')
+raw lines 174 unique 174 answers 150 dropped-before-save restored True
+probe: (0, 'answered 150 unusable (this run) 24 of 174')
+probe answers 150 keys {'probe_good_japan'} main raw unchanged True
+done

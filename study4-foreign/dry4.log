@@ -1,0 +1,25 @@
+== informative
+bat 51 d -0.0643 floor 0.0028 0.0066 p 0.002 holm 0.004 mirror_holm 1.0 TEXT ADDS
+pit 69 d -0.0181 floor 0.0026 0.0017 p 0.002 holm 0.004 mirror_holm 1.0 TEXT ADDS
+== noise
+bat 51 d 0.0056 floor 0.0029 0.0069 p 0.641 holm 1.0 mirror_holm 0.361 NO GAIN
+pit 69 d 0.0057 floor 0.003 0.0015 p 0.962 holm 1.0 mirror_holm 0.08 NO GAIN
+== numonly
+bat 51 d 0.0006 floor 0.0012 0.0026 p 0.331 holm 0.331 mirror_holm 1.0 NO GAIN
+pit 69 d 0.0001 floor 0.0008 0.0007 p 0.122 holm 0.244 mirror_holm 1.0 NO GAIN
+== informative c=0.5 seed 1
+bat 51 d -0.0325 floor 0.0044 0.0059 p 0.002 holm 0.004 mirror_holm 1.0 TEXT ADDS
+pit 69 d -0.003 floor 0.0034 0.0015 p 0.002 holm 0.004 mirror_holm 1.0 TEXT ADDS
+== informative c=0.5 seed 2
+bat 51 d -0.0191 floor 0.0048 0.007 p 0.008 holm 0.008 mirror_holm 1.0 TEXT ADDS
+pit 69 d -0.007 floor 0.0031 0.0018 p 0.002 holm 0.004 mirror_holm 1.0 TEXT ADDS
+== informative c=0.5 seed 3
+bat 51 d -0.0094 floor 0.0063 0.0055 p 0.008 holm 0.012 mirror_holm 1.0 TEXT ADDS
+pit 69 d -0.0004 floor 0.0035 0.0015 p 0.006 holm 0.012 mirror_holm 1.0 TEXT ADDS
+== informative c=0.5 seed 4
+bat 51 d -0.0293 floor 0.0032 0.0067 p 0.002 holm 0.004 mirror_holm 1.0 TEXT ADDS
+pit 69 d 0.0002 floor 0.0034 0.0015 p 0.026 holm 0.026 mirror_holm 1.0 NO GAIN
+== informative c=0.5 seed 5
+bat 51 d -0.0251 floor 0.0043 0.0068 p 0.002 holm 0.004 mirror_holm 1.0 TEXT ADDS
+pit 69 d -0.0025 floor 0.003 0.0016 p 0.008 holm 0.008 mirror_holm 1.0 TEXT ADDS
+done

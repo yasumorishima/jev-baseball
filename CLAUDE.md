@@ -22,6 +22,7 @@ The owner starts a session with just 「続き」/「つづきから」.
   were only on the RPi5 (Study 4 article titles / revision ids / identity gate output / cleaned states,
   Study 3 `picks.json`/`sample.json`, Study 2 `train/test/probe.json`, all `raw.jsonl`/`jev_raw.jsonl`
   files) are gone. No result is lost, but Studies 2-4 cannot currently be re-run from the repo exactly.
+- 2026-11-23 (cloud): added "Evaluation practice (評価の作法, 2026-11 addition)" from Anthropic "Building strong safety evaluations" (owner: 「今後の評価の糧にしたい」); no other section changed. Same addition made in mlb-win-probability, npb-foreign-statcast, baseball-bayes, npb-prediction, mlb-data-pipeline, jev-baseball (mlb-pitch-forecast is not attached to this session).
 
 ## What this is
 Tests of TypeSafe Jev (`typesafe/jev-1.13`, a decision-only model that returns typed probabilities) on
@@ -58,6 +59,15 @@ generation) — do **not** ask it to turn numbers into a number (Studies 1/2 sho
    prepaid credit (402) — not an option.
 9. Do not commit third-party text: Wikipedia (CC BY-SA) article text and MLB.com draft blurbs stay out
    of the repo; commit titles, revision ids and timestamps instead (facts, enough to rebuild exactly).
+
+## Evaluation practice (評価の作法, 2026-11 addition)
+Lessons taken from Anthropic, "Building strong safety evaluations" (2026-11-13), kept only where they change what the next evaluation here does; rules above that already cover a point are not repeated.
+- **Repeated calls.** A scored item is called several times (≥ 3, if credit allows; otherwise say it was called once) and the spread is reported, since the output is not deterministic.
+- **Order and wording.** Randomise details that should not matter (order of options / candidates / text blocks), or re-run with the order reversed and report the gap.
+- **Jev as a labeler / feature generator.** Validate its labels on an independent hand-labelled sample with chance-corrected agreement (κ) before its features are used; parse failures and refusals are flagged and counted as excluded, never filled silently.
+- **Report every slice, changed or not** (batters / pitchers, language ja / en, text length band), with the correction declared if more than one is read as a decision.
+- **Configuration:** record model id and version date, endpoint, request body template md5 and call date per run; do not compare runs that differ in more than one of these.
+- **A surprising number is a harness suspect first** (identity gate, leak via career text): re-check before any reading.
 
 ## Next tasks (in order)
 No evaluation is pending: nothing in this repo forecasts an outcome that has not yet been scored
